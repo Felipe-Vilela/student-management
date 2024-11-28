@@ -64,4 +64,19 @@ app.get("/alunos/:id", (req, res) =>{
     res.status(200).json(alunos[index])
 })
 
+app.put("/alunos/:id", (req, res) => {
+    const index = findOneStudent(req.params.id);
+    
+    if(index === -1){
+        return res.status(404).json({messege: "Aluno não encontrado"});
+    }
+
+    alunos[index].nome = req.body.nome;
+    alunos[index].ra = req.body.ra;
+    alunos[index].nota1 = req.body.nota1;
+    alunos[index].nota2 = req.body.nota2;
+
+    res.status(200).json(alunos[index]);
+});
+
 export default app;
