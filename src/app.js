@@ -79,4 +79,17 @@ app.put("/alunos/:id", (req, res) => {
     res.status(200).json(alunos[index]);
 });
 
+
+app.delete("/alunos/:id", (req, res) => {
+    const index = findOneStudent(req.params.id);
+    
+    if(index === -1){
+        return res.status(404).json({messege: "Aluno não encontrado"});
+    }
+    
+    alunos.splice(index, 1)
+
+    res.status(200).json({messege: "Aluno removido"});
+});
+
 export default app;
