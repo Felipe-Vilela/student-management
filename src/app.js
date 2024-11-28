@@ -39,4 +39,9 @@ app.get("/alunos", (req, res) => {
     res.status(200).json(alunos);
 });
 
+app.post("/alunos", (req, res) => {
+    alunos.push(req.body);
+    res.status(201).send("Aluno criado com sucesso!")
+});
+
 export default app;
