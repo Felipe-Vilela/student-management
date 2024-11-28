@@ -3,6 +3,16 @@ import express from "express";
 const app = express();
 app.use(express.json());
 
+
+function findOneStudent(id){
+    return alunos.findIndex(alunos => {
+        return alunos.id === Number(id);
+    });
+}
+
+
+
+
 const alunos = [
     {
         id: 1,
@@ -43,5 +53,15 @@ app.post("/alunos", (req, res) => {
     alunos.push(req.body);
     res.status(201).send("Aluno criado com sucesso!")
 });
+
+app.get("/alunos/:id", (req, res) =>{
+    const index = findOneStudent(req.params.id);
+
+    if(index === -1){
+        return res.status(404).json({messege: "Aluno não encontrado"});
+    }
+
+    res.status(200).json(alunos[index])
+})
 
 export default app;
