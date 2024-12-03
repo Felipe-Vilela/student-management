@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 
 const app = express();
 app.use(express.json());
@@ -78,7 +78,7 @@ app.get("/alunos", (req, res) => {
 
 app.post("/alunos", (req, res) => {
     alunos.push(req.body);
-    res.status(201).send("Aluno criado com sucesso!")
+    res.status(201).json({ message: "Aluno criado com sucesso"})
 });
 
 app.get("/alunos/aprovados", (req, res) => {
