@@ -10,8 +10,21 @@ function findOneStudent(id){
     });
 }
 
+function medias(alunos){
+    const media_alunos = [];
 
 
+    alunos.forEach(aluno  => {
+        const media = (aluno.nota1 + aluno.nota2) / 2
+
+        media_alunos.push({
+            nome: aluno.nome,
+            media: media
+        });
+    });
+
+    return media_alunos
+}
 
 const alunos = [
     {
@@ -40,6 +53,7 @@ const alunos = [
     }
 ]
 
+
 app.get("/", (req, res) => {
     res.status(200).send("Hello World!");
 });
@@ -54,13 +68,27 @@ app.post("/alunos", (req, res) => {
     res.status(201).send("Aluno criado com sucesso!")
 });
 
+app.get("/alunos/medias/", (req, res) =>{
+
+    const tam = alunos.length;
+
+    if (tam === 0) {
+        return res.status(404).json({messege: "Sem registros de alunos!"});
+    } 
+
+    const mediasAlunos = medias(alunos);
+
+    res.status(200).json(mediasAlunos)
+})
+
+
 app.get("/alunos/:id", (req, res) =>{
     const index = findOneStudent(req.params.id);
-
+    
     if(index === -1){
         return res.status(404).json({messege: "Aluno não encontrado"});
     }
-
+    
     res.status(200).json(alunos[index])
 })
 
@@ -70,14 +98,15 @@ app.put("/alunos/:id", (req, res) => {
     if(index === -1){
         return res.status(404).json({messege: "Aluno não encontrado"});
     }
-
+    
     alunos[index].nome = req.body.nome;
     alunos[index].ra = req.body.ra;
     alunos[index].nota1 = req.body.nota1;
     alunos[index].nota2 = req.body.nota2;
-
+    
     res.status(200).json(alunos[index]);
 });
+
 
 
 app.delete("/alunos/:id", (req, res) => {
@@ -91,5 +120,7 @@ app.delete("/alunos/:id", (req, res) => {
 
     res.status(200).json({messege: "Aluno removido"});
 });
+
+
 
 export default app;
