@@ -13,10 +13,8 @@ function findOneStudent(id){
 function medias(alunos){
     const media_alunos = [];
 
-
     alunos.forEach(aluno  => {
         const media = (aluno.nota1 + aluno.nota2) / 2
-
         media_alunos.push({
             nome: aluno.nome,
             media: media
@@ -25,6 +23,21 @@ function medias(alunos){
 
     return media_alunos
 }
+
+function aprovados(alunos) {
+
+    const alunosAprovados = alunos.map(aluno => {
+        const media = (aluno.nota1 + aluno.nota2) / 2;  
+        const status = media >= 6 ? "aprovado" : "reprovado";  
+        return {
+            nome: aluno.nome,
+            status: status
+        };
+    });
+    
+    return alunosAprovados;
+}
+
 
 const alunos = [
     {
@@ -68,7 +81,21 @@ app.post("/alunos", (req, res) => {
     res.status(201).send("Aluno criado com sucesso!")
 });
 
-app.get("/alunos/medias/", (req, res) =>{
+app.get("/alunos/aprovados", (req, res) => {
+    const tam = alunos.length;
+
+    if (tam === 0) {
+        return res.status(404).json({ message: "Sem registros de alunos!" });
+    }
+
+    const alunosAprovados = aprovados(alunos);
+
+    
+
+    res.status(200).json(alunosAprovados);
+});
+
+app.get("/alunos/medias", (req, res) =>{
 
     const tam = alunos.length;
 
@@ -78,7 +105,7 @@ app.get("/alunos/medias/", (req, res) =>{
 
     const mediasAlunos = medias(alunos);
 
-    res.status(200).json(mediasAlunos)
+    return res.status(200).json(mediasAlunos)
 })
 
 
