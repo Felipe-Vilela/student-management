@@ -28,8 +28,8 @@ app.post('/login', async(req, res) =>{
 
     const user = users.find(user => user.username === username);
 
-    if(!user ){
-        res.status(401).json({messege: 'Login incorreto!'});
+    if(!user || !(await bcrypt.compare(password, user.password)) ){
+        return res.status(401).json({messege: 'Login incorreto!'});
     }
 
     const token = jwt.sign(
