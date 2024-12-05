@@ -7,10 +7,41 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-
 app.use( express.json() );
 
+//MOCKS
+
 const users = [];
+
+
+const alunos = [
+    {
+        id: 1,
+        nome: "Cauã Olivio",
+        ra: "SC3039587",
+        nota1: 9.0,
+        nota2: 10.0
+
+    },
+    {
+        id: 2,
+        nome: "Felipe Vilela",
+        ra: "SC303898X",
+        nota1: 9.5,
+        nota2: 9.0
+
+    },
+    {
+        id: 3,
+        nome: "Asdrubal Topolinsk",
+        ra: "SC0000000",
+        nota1: 10.0,
+        nota2: 10.0
+
+    }
+]
+
+
 
 app.post('/register', async(req, res) => {
     const {username, password} = req.body;
@@ -20,7 +51,7 @@ app.post('/register', async(req, res) => {
     users.push({username, password: hashedPassword});
     console.log(users)
 
-    res.status(201).json({messege: 'User registred'});
+    res.status(201).json({messege: 'Usuário criado!'});
 })
 
 app.post('/login', async(req, res) =>{
@@ -99,11 +130,11 @@ app.get('/protected1', (req,res) => {
 });
 
 app.get('/protected2', (req,res) => {
-    res.send('Rota protegida 2');
+    res.send({messege: 'Rota protegida 2'});
 });
 
 app.get('/protected3', (req,res) => {
-    res.send('Rota protegida 3');
+    res.send({messege: 'Rota protegida 1'});
 });
 
 
@@ -143,36 +174,9 @@ function aprovados(alunos) {
 }
 
 
-const alunos = [
-    {
-        id: 1,
-        nome: "Caua Olivio",
-        ra: "SC001",
-        nota1: 9.0,
-        nota2: 10.0
-
-    },
-    {
-        id: 2,
-        nome: "Felipe Vilela",
-        ra: "SC002",
-        nota1: 9.5,
-        nota2: 9.0
-
-    },
-    {
-        id: 3,
-        nome: "Asdrubal Zoroastro",
-        ra: "SC003",
-        nota1: 10.0,
-        nota2: 10.0
-
-    }
-]
-
 
 app.get("/", (req, res) => {
-    res.status(200).send("Hello World!");
+    res.status(200).send({ message: "Home"});
 });
 
 
