@@ -29,19 +29,18 @@ app.post('/login', async(req, res) =>{
     const user = users.find(user => user.username === username);
 
     if(!user || !(await bcrypt.compare(password, user.password)) ){
-        return res.status(401).json({messege: 'Login incorreto!'});
+        return res.status(401).json({messege: 'Login Incorreto!'});
     }
 
     const token = jwt.sign(
-        {username: user.username},
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' , algorithm: 'HS256'}
-    );
+            {username: user.username},
+            process.env.JWT_SECRET,
+            {expiresIn: '1h' , algorithm: 'HS256'});
 
-    res.json(token);
-    console.log("Login efetuado pelo usuário" + username);
-
-})
+    res.json({messege: "Login efetuado com sucesso!",
+              jwt: token
+    });        
+});
 
 
 const authenticateJWT = (req, res, next) => {
@@ -59,7 +58,7 @@ const authenticateJWT = (req, res, next) => {
     }
     
     if (!token) {
-        return res.status(401).send('Acesso negado. Token não fornecido.');
+        return res.status(401).send({message: "Acesso negado. Token não fornecido."});
     }
     
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
@@ -67,13 +66,13 @@ const authenticateJWT = (req, res, next) => {
         if (err) {
 
             if (err.name === 'TokenExpiredError') {
-                return res.status(401).send('Acesso negado. Token expirado.');
+                return res.status(401).send({message: "Acesso negado. Token expirado."});
 
             } else if (err.name === 'JsonWebTokenError') {
-                return res.status(403).send('Acesso negado. Token inválido.');
+                return res.status(403).send({message: "Acesso negado. Token inválido."});
 
             } else {
-                return res.status(403).send('Acesso negado. Erro na verificação do token.');
+                return res.status(403).send({message: "Acesso negado. Erro na verificação do token."});
             }
         }
 
