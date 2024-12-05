@@ -9,10 +9,7 @@ dotenv.config();
 const app = express();
 app.use( express.json() );
 
-//MOCKS
-
 const users = [];
-
 
 const alunos = [
     {
@@ -41,38 +38,39 @@ const alunos = [
     }
 ]
 
+function findOneStudent(id){
+    return alunos.findIndex(alunos => {
+        return alunos.id === Number(id);
+    });
+}
 
+function medias(alunos){
+    const media_alunos = [];
 
-app.post('/register', async(req, res) => {
-    const {username, password} = req.body;
+    alunos.forEach(aluno  => {
+        const media = (aluno.nota1 + aluno.nota2) / 2
+        media_alunos.push({
+            nome: aluno.nome,
+            media: media
+        });
+    });
 
-    const hashedPassword = await bcrypt.hash(password,10);
+    return media_alunos
+}
 
-    users.push({username, password: hashedPassword});
-    console.log(users)
+function aprovados(alunos) {
 
-    res.status(201).json({messege: 'Usuário criado!'});
-})
-
-app.post('/login', async(req, res) =>{
-    const {username, password} = req.body;
-
-    const user = users.find(user => user.username === username);
-
-    if(!user || !(await bcrypt.compare(password, user.password)) ){
-        return res.status(401).json({messege: 'Login Incorreto!'});
-    }
-
-    const token = jwt.sign(
-            {username: user.username},
-            process.env.JWT_SECRET,
-            {expiresIn: '1h' , algorithm: 'HS256'});
-
-    res.json({messege: "Login efetuado com sucesso!",
-              jwt: token
-    });        
-});
-
+    const alunosAprovados = alunos.map(aluno => {
+        const media = (aluno.nota1 + aluno.nota2) / 2;  
+        const status = media >= 6 ? "aprovado" : "reprovado";  
+        return {
+            nome: aluno.nome,
+            status: status
+        };
+    });
+    
+    return alunosAprovados;
+}
 
 const authenticateJWT = (req, res, next) => {
 
@@ -121,64 +119,41 @@ const authenticateJWT = (req, res, next) => {
     });
 }
 
+app.post('/register', async(req, res) => {
+    const {username, password} = req.body;
+
+    const hashedPassword = await bcrypt.hash(password,10);
+
+    users.push({username, password: hashedPassword});
+    console.log(users)
+
+    res.status(201).json({messege: 'Usuário criado!'});
+})
+
+app.post('/login', async(req, res) =>{
+    const {username, password} = req.body;
+
+    const user = users.find(user => user.username === username);
+
+    if(!user || !(await bcrypt.compare(password, user.password)) ){
+        return res.status(401).json({messege: 'Login Incorreto!'});
+    }
+
+    const token = jwt.sign(
+            {username: user.username},
+            process.env.JWT_SECRET,
+            {expiresIn: '1h' , algorithm: 'HS256'});
+
+    res.json({messege: "Login efetuado com sucesso!",
+              jwt: token
+    });        
+});
 
 app.use(authenticateJWT)
-
-
-app.get('/protected1', (req,res) => {
-    res.json({messege: 'Rota protegida 1'});
-});
-
-app.get('/protected2', (req,res) => {
-    res.send({messege: 'Rota protegida 2'});
-});
-
-app.get('/protected3', (req,res) => {
-    res.send({messege: 'Rota protegida 1'});
-});
-
-
-
-function findOneStudent(id){
-    return alunos.findIndex(alunos => {
-        return alunos.id === Number(id);
-    });
-}
-
-function medias(alunos){
-    const media_alunos = [];
-
-    alunos.forEach(aluno  => {
-        const media = (aluno.nota1 + aluno.nota2) / 2
-        media_alunos.push({
-            nome: aluno.nome,
-            media: media
-        });
-    });
-
-    return media_alunos
-}
-
-function aprovados(alunos) {
-
-    const alunosAprovados = alunos.map(aluno => {
-        const media = (aluno.nota1 + aluno.nota2) / 2;  
-        const status = media >= 6 ? "aprovado" : "reprovado";  
-        return {
-            nome: aluno.nome,
-            status: status
-        };
-    });
-    
-    return alunosAprovados;
-}
-
-
 
 app.get("/", (req, res) => {
     res.status(200).send({ message: "Home"});
 });
-
 
 app.get("/alunos", (req, res) => {
     res.status(200).json(alunos);
@@ -198,8 +173,6 @@ app.get("/alunos/aprovados", (req, res) => {
 
     const alunosAprovados = aprovados(alunos);
 
-    
-
     res.status(200).json(alunosAprovados);
 });
 
@@ -215,7 +188,6 @@ app.get("/alunos/medias", (req, res) =>{
 
     return res.status(200).json(mediasAlunos)
 })
-
 
 app.get("/alunos/:id", (req, res) =>{
     const index = findOneStudent(req.params.id);
@@ -242,8 +214,6 @@ app.put("/alunos/:id", (req, res) => {
     res.status(200).json(alunos[index]);
 });
 
-
-
 app.delete("/alunos/:id", (req, res) => {
     const index = findOneStudent(req.params.id);
     
@@ -256,6 +226,16 @@ app.delete("/alunos/:id", (req, res) => {
     res.status(200).json({messege: "Aluno removido"});
 });
 
+app.get('/protected1', (req,res) => {
+    res.json({messege: 'Rota protegida 1'});
+});
 
+app.get('/protected2', (req,res) => {
+    res.send({messege: 'Rota protegida 2'});
+});
+
+app.get('/protected3', (req,res) => {
+    res.send({messege: 'Rota protegida 1'});
+});
 
 export default app;
