@@ -26,9 +26,11 @@ Este projeto é um sistema de gerenciamento de alunos e autenticação JWT. Ele 
 ## Como Executar o Projeto
 
 1. **Clone o repositório**:
-   `git clone https://github.com/seu-usuario/sistema-gerenciamento-alunos.git`
+ ```bash
+ git clone https://github.com/seu-usuario/sistema-gerenciamento-alunos.git
+ ```
 
-2. Instale as dependências
+3. Instale as dependências
 ```bash
 npm install
 ```
